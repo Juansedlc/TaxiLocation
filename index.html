@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="esp">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localizador</title>
+    <style>       
+        div {
+          margin-bottom: 10px;
+          text-align: center;
+        }
+        label {
+          font-size:100%;
+          display: inline-block;
+          width: 80px;
+          text-align: center;
+        }
+        input {
+            font-size:100%;
+        }
+        header {
+            font-style: normal;
+            font-size: 300%;
+            text-align: left;
+            margin-bottom: 40px;
+        }
+        #MapID { height: 500px; }
+      </style>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+       integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""/>
+      <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+       crossorigin=""></script>
+
+</head>
+
+<body>
+    <div>
+        <header style="text-align: center"><b><i>Localizador</b></i></header>
+      </div>
+  
+    <div>
+        <label>Latitud</label>
+        <label id="LatID"style="border: 0.5px solid black; border-radius: 8px; width: 200px;">Sin datos</label>
+      </div>
+  
+      <div>
+        <label>Longitud</label>
+        <label id="LongID" style="border: 0.5px solid rgb(0, 0, 0); border-radius: 8px; width: 200px;">Sin datos</label>
+      </div>
+
+      <div>
+        <label>Fecha</label>
+        <label id="FechaID" style="border: 0.5px solid black; border-radius: 8px; width: 200px;">Sin datos</label>
+      </div>
+
+      <div>
+          <label>Hora</label>
+          <label id="HoraID" style="border: 0.5px solid black; border-radius: 8px; width: 200px;">Sin datos</label>
+      </div>
+<div id="MapID" > </div>
+      <script>
+        var map = L.map('MapID').setView({ lat: 11.008, lng: -74.809 });
+        map.setZoom(13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	     maxZoom: 19,
+	     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        async function getGPS() {
+            response = await fetch("http://taxilocation.hopto.org/gps");
+            coordinates = await response.json();
+            document.getElementById("LatID").textContent = coordinates.lat;
+            document.getElementById("LongID").textContent = coordinates.lon;
+            document.getElementById("FechaID").textContent = coordinates.date;
+            document.getElementById("HoraID").textContent = coordinates.time;
+            const latlng = [parseFloat(coordinates.lat) , parseFloat(coordinates.lon)]
+            var marker = L.marker(latlng).addTo(map);
+            map.setView(latlng);
+          }
+        setInterval(getGPS, 1000);
+    </script>
+
+</body>
+</html>
